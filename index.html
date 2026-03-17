@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a1a1a">
+<title>March Madness Draft</title>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRHJhZnQgQm9hcmQiLCJzaG9ydF9uYW1lIjoiRHJhZnQiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzFhMWExYSIsInRoZW1lX2NvbG9yIjoiIzFhMWExYSJ9">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+--bg:#ffffff;--bg2:#f5f5f4;--bg3:#ebebea;--text:#1a1a1a;--text2:#6b6b6b;--text3:#aaa;
+--border:#e5e5e3;--blue:#378ADD;--blue-bg:rgba(55,138,221,0.08);--blue-light:#E6F1FB;
+--east:#534AB7;--east-bg:#EEEDFE;--west:#993C1D;--west-bg:#FAECE7;
+--mw:#0F6E56;--mw-bg:#E1F5EE;--south:#854F0B;--south-bg:#FAEEDA;
+--inj:#E24B4A;--inj-bg:#FCEBEB;
+}
+@media(prefers-color-scheme:dark){
+:root{--bg:#1a1a1a;--bg2:#252523;--bg3:#3a3a38;--text:#e5e5e3;--text2:#999;--text3:#555;
+--border:#333331;--blue:#5ba3e6;--blue-bg:rgba(91,163,230,0.12);--blue-light:#1a3050;
+--east-bg:#2d2670;--east:#CECBF6;--west-bg:#5a1e10;--west:#F5C4B3;
+--mw-bg:#064035;--mw:#9FE1CB;--south-bg:#4a2a05;--south:#FAC775;
+--inj:#F09595;--inj-bg:#3d1111;}
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;display:flex;flex-direction:column}
+
+.top-bar{padding:12px 16px 8px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0}
+.top-bar h1{font-size:17px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.top-bar h1 span{font-size:12px;font-weight:400;color:var(--text2)}
+.reset-link{font-size:12px;color:var(--text3);text-decoration:underline;cursor:pointer}
+
+.region-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.rc{text-align:center;padding:6px 4px;border-radius:8px;border:1px solid var(--border)}
+.rc .rlabel{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px;display:block}
+.rc .rnum{font-size:18px;font-weight:600;display:block;margin-top:1px}
+.rc-East{border-color:var(--east-bg)}.rc-East .rnum{color:var(--east)}
+.rc-West{border-color:var(--west-bg)}.rc-West .rnum{color:var(--west)}
+.rc-MW{border-color:var(--mw-bg)}.rc-MW .rnum{color:var(--mw)}
+.rc-South{border-color:var(--south-bg)}.rc-South .rnum{color:var(--south)}
+
+.my-picks-row{display:flex;gap:5px;flex-wrap:wrap;min-height:24px;align-items:center;margin-bottom:6px}
+.my-picks-row .lbl{font-size:11px;color:var(--text3);font-weight:500}
+.chip{font-size:11px;padding:3px 8px;border-radius:6px;background:var(--blue-light);color:var(--blue);cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+.chip .cx{font-size:9px;opacity:0.5}
+.chip.cinj{border:1px dashed var(--inj)}
+
+.controls{display:flex;gap:6px;flex-wrap:wrap}
+.controls input,.controls select{padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px;outline:none;-webkit-appearance:none;appearance:none}
+.controls input{flex:1;min-width:0}
+.controls select{min-width:80px;padding-right:24px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6b6b'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.stats-row{font-size:11px;color:var(--text2);padding:6px 0 2px;display:flex;gap:10px}
+.stats-row b{color:var(--text);font-weight:500}
+
+.tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg)}
+.tab{flex:1;text-align:center;padding:10px 0;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:color 0.15s}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab .tcount{font-size:11px;opacity:0.7;margin-left:3px}
+
+.list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 80px}
+.player-card{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px;cursor:pointer;transition:background 0.1s;-webkit-user-select:none;user-select:none}
+.player-card:active{background:var(--bg2)}
+.player-card.drafted{opacity:0.25}
+.player-card.drafted .pc-name,.player-card.drafted .pc-team,.player-card.drafted .pc-ppg{text-decoration:line-through}
+.player-card.mine{background:var(--blue-bg);opacity:1}
+.player-card.mine .pc-name,.player-card.mine .pc-team,.player-card.mine .pc-ppg{text-decoration:none}
+
+.pc-rank{width:28px;font-size:12px;color:var(--text3);text-align:center;flex-shrink:0;font-weight:500}
+.pc-info{flex:1;min-width:0}
+.pc-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-name.injured{font-style:italic}
+.pc-meta{display:flex;align-items:center;gap:6px;margin-top:2px}
+.pc-team{font-size:12px;color:var(--text2)}
+.rg{font-size:9px;padding:1px 5px;border-radius:4px;font-weight:700;letter-spacing:0.2px}
+.rg-East{background:var(--east-bg);color:var(--east)}
+.rg-West{background:var(--west-bg);color:var(--west)}
+.rg-MW{background:var(--mw-bg);color:var(--mw)}
+.rg-South{background:var(--south-bg);color:var(--south)}
+.seed-tag{font-size:10px;color:var(--text3)}
+.inj-tag{font-size:9px;padding:1px 4px;border-radius:3px;background:var(--inj-bg);color:var(--inj);font-weight:700;margin-left:4px}
+
+.pc-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.pc-ppg{font-size:15px;font-weight:600;min-width:36px;text-align:right}
+.pc-btn{width:44px;height:32px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;text-transform:uppercase;letter-spacing:0.3px}
+.pc-btn:active{transform:scale(0.95)}
+.pc-btn.is-mine{border-color:var(--blue);color:var(--blue);background:var(--blue-bg)}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px}
+
+.sort-bar{display:flex;gap:0;padding:0 16px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+.sort-opt{padding:8px 10px;font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;text-transform:uppercase;letter-spacing:0.3px;white-space:nowrap}
+.sort-opt.active{color:var(--blue)}
+.sort-opt .sarr{font-size:8px}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>Draft board <span>Pick 2 / Snake</span></h1>
+  <div class="region-row" id="regionRow"></div>
+  <div class="my-picks-row" id="picksRow"></div>
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search player or team...">
+    <select id="regionFilter"><option value="">Rgn</option><option value="East">E</option><option value="West">W</option><option value="MW">MW</option><option value="South">S</option></select>
+    <select id="seedFilter"><option value="">Seed</option></select>
+  </div>
+  <div class="stats-row" id="stats"></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="all">All<span class="tcount" id="tc-all"></span></div>
+  <div class="tab" data-tab="available">Open<span class="tcount" id="tc-available"></span></div>
+  <div class="tab" data-tab="mine">Mine<span class="tcount" id="tc-mine"></span></div>
+  <div class="tab" data-tab="injured">INJ<span class="tcount" id="tc-injured"></span></div>
+</div>
+
+<div class="sort-bar">
+  <div class="sort-opt active" data-sort="r">Rank<span class="sarr"></span></div>
+  <div class="sort-opt" data-sort="ppg">PPG<span class="sarr"></span></div>
+  <div class="sort-opt" data-sort="t">Team<span class="sarr"></span></div>
+  <div class="sort-opt" data-sort="p">Name<span class="sarr"></span></div>
+</div>
+
+<div class="list" id="list"></div>
+
+<script>
+const INJURED=new Set([19,32,142,158,170,275,333,366]);
+const DATA=[{"r":1,"s":"1","rg":"East","p":"Cameron Boozer F","t":"Duke","ppg":22.7},{"r":2,"s":"4","rg":"West","p":"Darius Acuff Jr. G","t":"Arkansas","ppg":22.0},{"r":3,"s":"4","rg":"MW","p":"Labaron Philon Jr. G","t":"Alabama","ppg":21.4},{"r":4,"s":"1","rg":"West","p":"Brayden Burries G","t":"Arizona","ppg":15.5},{"r":5,"s":"1","rg":"MW","p":"Yaxel Lendeborg F","t":"Michigan","ppg":14.3},{"r":6,"s":"1","rg":"East","p":"Isaiah Evans G","t":"Duke","ppg":14.5},{"r":7,"s":"1","rg":"South","p":"Thomas Haugh F","t":"Florida","ppg":17.1},{"r":8,"s":"6","rg":"West","p":"AJ Dybantsa F","t":"BYU","ppg":25.1},{"r":9,"s":"1","rg":"MW","p":"Morez Johnson Jr. F","t":"Michigan","ppg":13.4},{"r":10,"s":"2","rg":"South","p":"Kingston Flemings G","t":"Houston","ppg":16.6},{"r":11,"s":"3","rg":"West","p":"Graham Ike F","t":"Gonzaga","ppg":19.7},{"r":12,"s":"3","rg":"South","p":"Keaton Wagler G","t":"Illinois","ppg":18.3},{"r":13,"s":"5","rg":"South","p":"Tyler Tanner G","t":"Vanderbilt","ppg":18.5},{"r":14,"s":"2","rg":"MW","p":"Milan Momcilovic F","t":"Iowa St.","ppg":17.4},{"r":15,"s":"1","rg":"West","p":"Jaden Bradley G","t":"Arizona","ppg":13.9},{"r":16,"s":"1","rg":"West","p":"Koa Peat F","t":"Arizona","ppg":13.8},{"r":17,"s":"2","rg":"South","p":"Emanuel Sharp G","t":"Houston","ppg":16.0},{"r":18,"s":"2","rg":"MW","p":"Joshua Jefferson F","t":"Iowa St.","ppg":16.6},{"r":19,"s":"3","rg":"West","p":"Braden Huff F","t":"Gonzaga","ppg":17.8},{"r":20,"s":"1","rg":"South","p":"Alex Condon F","t":"Florida","ppg":14.4},{"r":21,"s":"4","rg":"East","p":"Darryn Peterson G","t":"Kansas","ppg":19.5},{"r":22,"s":"1","rg":"MW","p":"Aday Mara C","t":"Michigan","ppg":11.4},{"r":23,"s":"4","rg":"MW","p":"Aden Holloway G","t":"Alabama","ppg":16.7},{"r":24,"s":"5","rg":"South","p":"Duke Miles G","t":"Vanderbilt","ppg":16.0},{"r":25,"s":"5","rg":"MW","p":"Christian Anderson G","t":"Texas Tech","ppg":19.6},{"r":26,"s":"5","rg":"West","p":"Nick Boyd G","t":"Wisconsin","ppg":20.2},{"r":27,"s":"5","rg":"East","p":"Zuby Ejiofor F","t":"St. John's","ppg":15.6},{"r":28,"s":"6","rg":"MW","p":"Ja'Kobi Gillespie G","t":"Tennessee","ppg":18.4},{"r":29,"s":"2","rg":"West","p":"Braden Smith G","t":"Purdue","ppg":14.8},{"r":30,"s":"3","rg":"East","p":"Jeremy Fears Jr. G","t":"Michigan St.","ppg":14.9},{"r":31,"s":"3","rg":"MW","p":"Thijs De Ridder F","t":"Virginia","ppg":16.0},{"r":32,"s":"6","rg":"East","p":"Mikel Brown Jr. G","t":"Louisville","ppg":18.9},{"r":33,"s":"2","rg":"East","p":"Solo Ball G","t":"UCONN","ppg":14.1},{"r":34,"s":"1","rg":"East","p":"Patrick Ngongba II C","t":"Duke","ppg":10.7},{"r":35,"s":"5","rg":"West","p":"John Blackwell G","t":"Wisconsin","ppg":18.7},{"r":36,"s":"4","rg":"West","p":"Meleek Thomas G","t":"Arkansas","ppg":15.0},{"r":37,"s":"6","rg":"MW","p":"Nate Ament F","t":"Tennessee","ppg":17.4},{"r":38,"s":"6","rg":"East","p":"Ryan Conwell G","t":"Louisville","ppg":18.5},{"r":39,"s":"2","rg":"East","p":"Tarris Reed Jr. C","t":"UCONN","ppg":13.8},{"r":40,"s":"1","rg":"MW","p":"Elliot Cadeau G","t":"Michigan","ppg":10.1},{"r":41,"s":"4","rg":"South","p":"Pryce Sandfort F","t":"Nebraska","ppg":17.9},{"r":42,"s":"3","rg":"South","p":"Kylan Boswell G","t":"Illinois","ppg":13.9},{"r":43,"s":"5","rg":"South","p":"Tyler Nickel F","t":"Vanderbilt","ppg":14.1},{"r":44,"s":"1","rg":"West","p":"Motiejus Krivas C","t":"Arizona","ppg":10.6},{"r":45,"s":"6","rg":"West","p":"Robert Wright III G","t":"BYU","ppg":18.1},{"r":46,"s":"2","rg":"MW","p":"Tamin Lipsey G","t":"Iowa St.","ppg":13.0},{"r":47,"s":"1","rg":"MW","p":"Trey McKenney G","t":"Michigan","ppg":9.7},{"r":48,"s":"2","rg":"West","p":"Fletcher Loyer G","t":"Purdue","ppg":13.4},{"r":49,"s":"5","rg":"East","p":"Bryce Hopkins F","t":"St. John's","ppg":13.8},{"r":50,"s":"8","rg":"East","p":"Bruce Thornton G","t":"Ohio St.","ppg":20.0},{"r":51,"s":"2","rg":"East","p":"Alex Karaban F","t":"UCONN","ppg":13.0},{"r":52,"s":"7","rg":"West","p":"Malik Reneau F","t":"Miami (Fla)","ppg":19.6},{"r":53,"s":"1","rg":"South","p":"Boogie Fland G","t":"Florida","ppg":11.6},{"r":54,"s":"2","rg":"West","p":"Trey Kaufman-Renn F","t":"Purdue","ppg":13.2},{"r":55,"s":"3","rg":"South","p":"Andrej Stojakovic G","t":"Illinois","ppg":13.2},{"r":56,"s":"1","rg":"West","p":"Ivan Kharchenkov F","t":"Arizona","ppg":10.1},{"r":57,"s":"1","rg":"South","p":"Xaivian Lee G","t":"Florida","ppg":11.4},{"r":58,"s":"1","rg":"South","p":"Rueben Chinyelu C","t":"Florida","ppg":11.3},{"r":59,"s":"3","rg":"South","p":"David Mirkovic F","t":"Illinois","ppg":12.7},{"r":60,"s":"4","rg":"MW","p":"Latrell Wrightsell G","t":"Alabama","ppg":13.3},{"r":61,"s":"2","rg":"East","p":"Braylon Mullins G","t":"UCONN","ppg":12.2},{"r":62,"s":"9","rg":"South","p":"Bennett Stirtz G","t":"Iowa ","ppg":20.7},{"r":63,"s":"1","rg":"West","p":"Tobe Awaka F","t":"Arizona","ppg":9.6},{"r":64,"s":"6","rg":"South","p":"Henri Veesaar C","t":"North Carolina","ppg":16.3},{"r":65,"s":"7","rg":"MW","p":"Otega Oweh G","t":"Kentucky","ppg":17.7},{"r":66,"s":"2","rg":"South","p":"Milos Uzan G","t":"Houston","ppg":11.0},{"r":67,"s":"9","rg":"West","p":"MJ Collins Jr. G","t":"Utah St.","ppg":17.9},{"r":68,"s":"7","rg":"East","p":"Tyler Bilodeau F","t":"UCLA","ppg":17.9},{"r":69,"s":"4","rg":"East","p":"Flory Bidunga F","t":"Kansas","ppg":14.3},{"r":70,"s":"3","rg":"East","p":"Jaxon Kohler F","t":"Michigan St.","ppg":12.1},{"r":71,"s":"7","rg":"South","p":"Paulius Murauskas F","t":"St. Mary's","ppg":18.6},{"r":72,"s":"1","rg":"MW","p":"Nimari Burnett G","t":"Michigan","ppg":8.5},{"r":73,"s":"4","rg":"East","p":"Tre White G","t":"Kansas","ppg":14.0},{"r":74,"s":"4","rg":"West","p":"Trevon Brazile F","t":"Arkansas","ppg":12.4},{"r":75,"s":"1","rg":"West","p":"Anthony Dell'Orso G","t":"Arizona","ppg":9.0},{"r":76,"s":"1","rg":"South","p":"Urban Klavzar G","t":"Florida","ppg":10.2},{"r":77,"s":"2","rg":"East","p":"Silas Demary Jr. G","t":"UCONN","ppg":11.3},{"r":78,"s":"8","rg":"MW","p":"Jeremiah Wilkinson G","t":"Georgia","ppg":17.7},{"r":79,"s":"3","rg":"East","p":"Coen Carr F","t":"Michigan St.","ppg":11.6},{"r":80,"s":"4","rg":"MW","p":"Amari Allen F","t":"Alabama","ppg":12.1},{"r":81,"s":"4","rg":"East","p":"Melvin Council Jr. G","t":"Kansas","ppg":13.5},{"r":82,"s":"3","rg":"MW","p":"Malik Thomas G","t":"Virginia","ppg":12.3},{"r":83,"s":"7","rg":"West","p":"Tre Donaldson G","t":"Miami (Fla)","ppg":16.6},{"r":84,"s":"9","rg":"West","p":"Mason Falslev G","t":"Utah St.","ppg":16.0},{"r":85,"s":"6","rg":"South","p":"Seth Trimble G","t":"North Carolina","ppg":14.2},{"r":86,"s":"4","rg":"South","p":"Rienk Mast F","t":"Nebraska","ppg":13.8},{"r":87,"s":"2","rg":"South","p":"Chris Cenac Jr. F","t":"Houston","ppg":9.5},{"r":88,"s":"4","rg":"West","p":"Billy Richmond III G","t":"Arkansas","ppg":11.2},{"r":89,"s":"3","rg":"South","p":"Tomislav Ivisic C","t":"Illinois","ppg":10.6},{"r":90,"s":"3","rg":"West","p":"Tyon Grant-Foster G","t":"Gonzaga","ppg":11.2},{"r":91,"s":"5","rg":"East","p":"Oziyah Sellers G","t":"St. John's","ppg":10.7},{"r":92,"s":"3","rg":"East","p":"Carson Cooper C","t":"Michigan St.","ppg":10.5},{"r":93,"s":"4","rg":"MW","p":"Aiden Sherrell F","t":"Alabama","ppg":11.0},{"r":94,"s":"5","rg":"MW","p":"Donovan Atwell G","t":"Texas Tech","ppg":13.0},{"r":95,"s":"5","rg":"West","p":"Nolan Winter F","t":"Wisconsin","ppg":13.5},{"r":96,"s":"2","rg":"West","p":"Oscar Cluff C","t":"Purdue","ppg":10.1},{"r":97,"s":"8","rg":"East","p":"John Mobley Jr. G","t":"Ohio St.","ppg":15.1},{"r":98,"s":"5","rg":"South","p":"Devin McGlockton F","t":"Vanderbilt","ppg":10.2},{"r":99,"s":"1","rg":"MW","p":"Roddy Gayle Jr. G","t":"Michigan","ppg":7.2},{"r":100,"s":"3","rg":"MW","p":"Sam Lewis G","t":"Virginia","ppg":10.9},{"r":101,"s":"5","rg":"East","p":"Ian Jackson G","t":"St. John's","ppg":10.1},{"r":102,"s":"5","rg":"MW","p":"LeJuan Watts F","t":"Texas Tech","ppg":12.2},{"r":103,"s":"7","rg":"West","p":"Shelton Henderson F","t":"Miami (Fla)","ppg":14.3},{"r":104,"s":"8","rg":"East","p":"Devin Royal F","t":"Ohio St.","ppg":14.1},{"r":105,"s":"4","rg":"South","p":"Braden Frager F","t":"Nebraska","ppg":12.1},{"r":106,"s":"5","rg":"South","p":"AK Okereke F","t":"Vanderbilt","ppg":9.5},{"r":107,"s":"7","rg":"East","p":"Donovan Dent G","t":"UCLA","ppg":13.9},{"r":108,"s":"3","rg":"MW","p":"Chance Mallory G","t":"Virginia","ppg":10.2},{"r":109,"s":"2","rg":"MW","p":"Killyan Toure G","t":"Iowa St.","ppg":8.9},{"r":110,"s":"7","rg":"MW","p":"Denzel Aberdeen G","t":"Kentucky","ppg":13.0},{"r":111,"s":"4","rg":"West","p":"Malique Ewin F","t":"Arkansas","ppg":9.6},{"r":112,"s":"5","rg":"South","p":"Jalen Washington C","t":"Vanderbilt","ppg":9.1},{"r":113,"s":"7","rg":"South","p":"Mikey Lewis G","t":"St. Mary's","ppg":13.9},{"r":114,"s":"8","rg":"MW","p":"Blue Cain G","t":"Georgia","ppg":13.5},{"r":115,"s":"1","rg":"East","p":"Cayden Boozer G","t":"Duke","ppg":6.5},{"r":116,"s":"8","rg":"West","p":"Tyler Perkins G","t":"Villanova","ppg":13.7},{"r":117,"s":"6","rg":"East","p":"J'Vonne Hadley G","t":"Louisville","ppg":11.3},{"r":118,"s":"2","rg":"MW","p":"Blake Buchanan F","t":"Iowa St.","ppg":8.3},{"r":119,"s":"7","rg":"East","p":"Trent Perry G","t":"UCLA","ppg":12.7},{"r":120,"s":"7","rg":"South","p":"Joshua Dent G","t":"St. Mary's","ppg":13.3},{"r":121,"s":"2","rg":"South","p":"Joseph Tugler F","t":"Houston","ppg":7.5},{"r":122,"s":"7","rg":"East","p":"Skyy Clark G","t":"UCLA","ppg":12.4},{"r":123,"s":"10","rg":"East","p":"Themus Fulks G","t":"UCF","ppg":14.3},{"r":124,"s":"8","rg":"West","p":"Acaden Lewis G","t":"Villanova","ppg":12.9},{"r":125,"s":"5","rg":"East","p":"Dillon Mitchell F","t":"St. John's","ppg":8.4},{"r":126,"s":"3","rg":"MW","p":"Jacari White G","t":"Virginia","ppg":8.9},{"r":127,"s":"6","rg":"East","p":"Isaac McKneely G","t":"Louisville","ppg":10.6},{"r":128,"s":"10","rg":"East","p":"Riley Kugel G","t":"UCF","ppg":14.0},{"r":129,"s":"5","rg":"East","p":"Joson Sanon G","t":"St. John's","ppg":8.3},{"r":130,"s":"4","rg":"South","p":"Jamarques Lawrence G","t":"Nebraska","ppg":10.3},{"r":131,"s":"11","rg":"South","p":"Terrence Hill Jr. G","t":"VCU","ppg":14.0},{"r":132,"s":"8","rg":"West","p":"Bryce Lindsay G","t":"Villanova","ppg":12.5},{"r":133,"s":"2","rg":"West","p":"C.J. Cox G","t":"Purdue","ppg":7.9},{"r":134,"s":"11","rg":"South","p":"Lazar Djokovic F","t":"VCU","ppg":13.8},{"r":135,"s":"10","rg":"West","p":"Mark Mitchell G","t":"Missouri","ppg":17.4},{"r":136,"s":"7","rg":"West","p":"Tru Washington G","t":"Miami (Fla)","ppg":11.6},{"r":137,"s":"3","rg":"West","p":"Mario Saint-Supery G","t":"Gonzaga","ppg":8.4},{"r":138,"s":"1","rg":"East","p":"Dame Sarr G","t":"Duke","ppg":5.8},{"r":139,"s":"10","rg":"East","p":"Jordan Burks F","t":"UCF","ppg":13.4},{"r":140,"s":"8","rg":"MW","p":"Marcus Millender G","t":"Georgia","ppg":11.8},{"r":141,"s":"1","rg":"East","p":"Nikolas Khamenia G","t":"Duke","ppg":5.7},{"r":142,"s":"4","rg":"West","p":"Karter Knox G","t":"Arkansas","ppg":8.1},{"r":143,"s":"6","rg":"MW","p":"J.P. Estrella F","t":"Tennessee","ppg":9.4},{"r":144,"s":"6","rg":"South","p":"Luka Bogavac G","t":"North Carolina","ppg":10.0},{"r":145,"s":"8","rg":"East","p":"Christoph Tilly C","t":"Ohio St.","ppg":11.3},{"r":146,"s":"3","rg":"West","p":"Davis Fogle G","t":"Gonzaga","ppg":8.1},{"r":147,"s":"8","rg":"West","p":"Duke Brennan F","t":"Villanova","ppg":11.9},{"r":148,"s":"8","rg":"South","p":"RJ Godfrey F","t":"Clemson","ppg":11.5},{"r":149,"s":"4","rg":"South","p":"Sam Hoiberg G","t":"Nebraska","ppg":9.6},{"r":150,"s":"11","rg":"East","p":"Izaiyah Nelson F","t":"South Florida","ppg":16.3},{"r":151,"s":"4","rg":"East","p":"Bryson Tiller F","t":"Kansas","ppg":8.9},{"r":152,"s":"6","rg":"East","p":"Sananda Fru F","t":"Louisville","ppg":9.6},{"r":153,"s":"7","rg":"MW","p":"Collin Chandler G","t":"Kentucky","ppg":10.5},{"r":154,"s":"3","rg":"West","p":"Adam Miller G","t":"Gonzaga","ppg":7.8},{"r":155,"s":"7","rg":"East","p":"Eric Dailey Jr. G","t":"UCLA","ppg":10.7},{"r":156,"s":"5","rg":"West","p":"Austin Rapp F","t":"Wisconsin","ppg":9.4},{"r":157,"s":"5","rg":"MW","p":"Jaylen Petty G","t":"Texas Tech","ppg":9.0},{"r":158,"s":"3","rg":"MW","p":"Johann Grunloh C","t":"Virginia","ppg":7.8},{"r":159,"s":"3","rg":"East","p":"Kur Teng G","t":"Michigan St.","ppg":7.2},{"r":160,"s":"11","rg":"East","p":"Wes Enis G","t":"South Florida","ppg":15.5},{"r":161,"s":"2","rg":"East","p":"Eric Reibe C","t":"UCONN","ppg":6.9},{"r":162,"s":"4","rg":"West","p":"D.J. Wagner G","t":"Arkansas","ppg":7.4},{"r":163,"s":"8","rg":"MW","p":"Kanon Catchings F","t":"Georgia","ppg":10.6},{"r":164,"s":"2","rg":"West","p":"Daniel Jacobsen C","t":"Purdue","ppg":6.9},{"r":165,"s":"3","rg":"South","p":"Zvonimir Ivisic C","t":"Illinois","ppg":6.9},{"r":166,"s":"2","rg":"MW","p":"Jamarion Batemon G","t":"Iowa St.","ppg":6.6},{"r":167,"s":"10","rg":"East","p":"Jamichael Stillwell F","t":"UCF","ppg":11.9},{"r":168,"s":"5","rg":"East","p":"Dylan Darling G","t":"St. John's","ppg":7.0},{"r":169,"s":"11","rg":"East","p":"Joseph Pinion G","t":"South Florida","ppg":14.5},{"r":170,"s":"3","rg":"West","p":"Jalen Warley G","t":"Gonzaga","ppg":7.1},{"r":171,"s":"12","rg":"MW","p":"Tavari Johnson G","t":"Akron","ppg":20.2},{"r":172,"s":"4","rg":"MW","p":"Houston Mallette G","t":"Alabama","ppg":7.0},{"r":173,"s":"13","rg":"East","p":"Dominique Daniels Jr. G","t":"Cal Baptist","ppg":22.3},{"r":174,"s":"9","rg":"South","p":"Tavion Banks G","t":"Iowa ","ppg":10.6},{"r":175,"s":"8","rg":"MW","p":"Somtochukwu Cyril C","t":"Georgia","ppg":9.8},{"r":176,"s":"8","rg":"South","p":"Jestin Porter G","t":"Clemson","ppg":9.7},{"r":177,"s":"12","rg":"West","p":"Terry Anderson F","t":"High Point","ppg":15.8},{"r":178,"s":"13","rg":"MW","p":"Cruz Davis G","t":"Hofstra","ppg":20.6},{"r":179,"s":"3","rg":"South","p":"Ben Humrichous F","t":"Illinois","ppg":6.3},{"r":180,"s":"10","rg":"West","p":"Jayden Stone G","t":"Missouri","ppg":13.9},{"r":181,"s":"1","rg":"South","p":"Isaiah Brown G","t":"Florida","ppg":5.5},{"r":182,"s":"4","rg":"MW","p":"Taylor Bol Bowen F","t":"Alabama","ppg":6.6},{"r":183,"s":"6","rg":"MW","p":"Jaylen Carey F","t":"Tennessee","ppg":7.6},{"r":184,"s":"1","rg":"East","p":"Maliq Brown F","t":"Duke","ppg":4.6},{"r":185,"s":"8","rg":"West","p":"Devin Askew G","t":"Villanova","ppg":9.7},{"r":186,"s":"8","rg":"East","p":"Amare Bynum F","t":"Ohio St.","ppg":9.2},{"r":187,"s":"6","rg":"East","p":"Adrian Wooley G","t":"Louisville","ppg":8.0},{"r":188,"s":"11p/i","rg":"West","p":"Darrion Williams F","t":"NC State","ppg":14.2},{"r":189,"s":"11p/i","rg":"West","p":"Dailyn Swain G","t":"Texas  ","ppg":18.0},{"r":190,"s":"2","rg":"West","p":"Omer Mayer G","t":"Purdue","ppg":6.1},{"r":191,"s":"9","rg":"West","p":"Karson Templin F","t":"Utah St.","ppg":8.9},{"r":192,"s":"1","rg":"West","p":"Dwayne Aristode F","t":"Arizona","ppg":4.7},{"r":193,"s":"8","rg":"South","p":"Nick Davidson F","t":"Clemson","ppg":9.2},{"r":194,"s":"3","rg":"East","p":"Jordan Scott F","t":"Michigan St.","ppg":6.1},{"r":195,"s":"9","rg":"East","p":"David Punch F","t":"TCU","ppg":13.9},{"r":196,"s":"6","rg":"South","p":"Jarin Stevenson F","t":"North Carolina","ppg":7.9},{"r":197,"s":"12","rg":"West","p":"Rob Martin G","t":"High Point","ppg":14.9},{"r":198,"s":"1","rg":"MW","p":"Will Tschetter F","t":"Michigan","ppg":4.3},{"r":199,"s":"11p/i","rg":"West","p":"Paul McNeil Jr. G","t":"NC State","ppg":13.8},{"r":200,"s":"6","rg":"MW","p":"Felix Okpara F","t":"Tennessee","ppg":7.3},{"r":201,"s":"4","rg":"MW","p":"London Jemison F","t":"Alabama","ppg":6.3},{"r":202,"s":"11p/i","rg":"West","p":"Quadir Copeland G","t":"NC State","ppg":13.6},{"r":203,"s":"7","rg":"MW","p":"Malachi Moreno C","t":"Kentucky","ppg":8.4},{"r":204,"s":"6","rg":"West","p":"Kennard Davis Jr. F","t":"BYU","ppg":7.8},{"r":205,"s":"11p/i","rg":"West","p":"Ven-Allen Lubin F","t":"NC State","ppg":13.5},{"r":206,"s":"5","rg":"South","p":"Tyler Harris F","t":"Vanderbilt","ppg":5.9},{"r":207,"s":"3","rg":"South","p":"Jake Davis F","t":"Illinois","ppg":5.8},{"r":208,"s":"3","rg":"MW","p":"Ugonna Onyenso C","t":"Virginia","ppg":6.3},{"r":209,"s":"11","rg":"South","p":"Jadrian Tracey G","t":"VCU","ppg":10.1},{"r":210,"s":"11p/i","rg":"MW","p":"Boopie Miller G","t":"SMU","ppg":18.9},{"r":211,"s":"5","rg":"West","p":"Braeden Carrington G","t":"Wisconsin","ppg":7.4},{"r":212,"s":"6","rg":"West","p":"Dawson Baker G","t":"BYU","ppg":7.5},{"r":213,"s":"3","rg":"West","p":"Emmanuel Innocenti F","t":"Gonzaga","ppg":6.0},{"r":214,"s":"7","rg":"MW","p":"Mouhamed Dioubate F","t":"Kentucky","ppg":8.0},{"r":215,"s":"2","rg":"MW","p":"Nate Heise G","t":"Iowa St.","ppg":5.3},{"r":216,"s":"12","rg":"South","p":"Larry Johnson G","t":"McNeese St.","ppg":16.9},{"r":217,"s":"9","rg":"West","p":"Kolby King G","t":"Utah St.","ppg":8.0},{"r":218,"s":"10","rg":"South","p":"Rashaun Agee F","t":"Texas A&M","ppg":14.3},{"r":219,"s":"9","rg":"East","p":"Xavier Edmonds F","t":"TCU","ppg":12.6},{"r":220,"s":"6","rg":"MW","p":"Bishop Boswell G","t":"Tennessee","ppg":6.7},{"r":221,"s":"8","rg":"South","p":"Ace Buckner G","t":"Clemson","ppg":8.3},{"r":222,"s":"14","rg":"South","p":"Ethan Roberts F","t":"Penn","ppg":16.9},{"r":223,"s":"9","rg":"MW","p":"Robbie Avila C","t":"Saint Louis","ppg":13.0},{"r":224,"s":"11","rg":"East","p":"CJ Brown G","t":"South Florida","ppg":11.8},{"r":225,"s":"12","rg":"West","p":"Cam'Ron Fletcher F","t":"High Point","ppg":13.4},{"r":226,"s":"3","rg":"MW","p":"Dallin Hall G","t":"Virginia","ppg":5.9},{"r":227,"s":"11p/i","rg":"MW","p":"Jaron Pierre Jr. G","t":"SMU","ppg":17.6},{"r":228,"s":"10","rg":"MW","p":"Christian Hammond G","t":"Santa Clara","ppg":15.9},{"r":229,"s":"7","rg":"South","p":"Andrew McKeever C","t":"St. Mary's","ppg":8.3},{"r":230,"s":"11p/i","rg":"West","p":"Matas Vokietaitis C","t":"Texas  ","ppg":15.6},{"r":231,"s":"11","rg":"East","p":"Josh Omojafo G","t":"South Florida","ppg":11.5},{"r":232,"s":"9","rg":"South","p":"Alvaro Folgueiras F","t":"Iowa ","ppg":8.7},{"r":233,"s":"2","rg":"West","p":"Gicarri Harris G","t":"Purdue","ppg":5.2},{"r":234,"s":"11","rg":"South","p":"Brandon Jennings G","t":"VCU","ppg":9.1},{"r":235,"s":"15","rg":"MW","p":"Aaron Nkrumah G","t":"Tennessee St.","ppg":17.7},{"r":236,"s":"15","rg":"South","p":"Kristian Gonzalez G","t":"Idaho","ppg":18.0},{"r":237,"s":"4","rg":"South","p":"Berke Buyuktuncel F","t":"Nebraska","ppg":6.6},{"r":238,"s":"3","rg":"West","p":"Braeden Smith G","t":"Gonzaga","ppg":5.5},{"r":239,"s":"1","rg":"East","p":"Darren Harris G","t":"Duke","ppg":3.8},{"r":240,"s":"14","rg":"South","p":"TJ Power F","t":"Penn","ppg":15.8},{"r":241,"s":"9","rg":"West","p":"Garry Clark F","t":"Utah St.","ppg":7.4},{"r":242,"s":"15","rg":"MW","p":"Travis Harper II G","t":"Tennessee St.","ppg":17.4},{"r":243,"s":"8","rg":"South","p":"Dillon Hunter G","t":"Clemson","ppg":7.7},{"r":244,"s":"15","rg":"East","p":"Alex Wilkins G","t":"Furman","ppg":17.8},{"r":245,"s":"3","rg":"East","p":"Cam Ward F","t":"Michigan St.","ppg":5.1},{"r":246,"s":"3","rg":"East","p":"Divine Ugochukwu G","t":"Michigan St.","ppg":5.1},{"r":247,"s":"7","rg":"East","p":"Xavier Booker F","t":"UCLA","ppg":7.5},{"r":248,"s":"11","rg":"South","p":"Nyk Lewis G","t":"VCU","ppg":8.8},{"r":249,"s":"2","rg":"West","p":"Jack Benter G","t":"Purdue","ppg":5.0},{"r":250,"s":"11p/i","rg":"MW","p":"Peter Suder G","t":"Miami (OH)","ppg":14.7},{"r":251,"s":"8","rg":"East","p":"Brandon Noel F","t":"Ohio St.","ppg":7.4},{"r":252,"s":"7","rg":"South","p":"Dillan Shaw G","t":"St. Mary's","ppg":7.7},{"r":253,"s":"2","rg":"South","p":"Isiah Harwell G","t":"Houston","ppg":4.4},{"r":254,"s":"9","rg":"West","p":"Adlan Elamin F","t":"Utah St.","ppg":7.1},{"r":255,"s":"12","rg":"MW","p":"Amani Lyles F","t":"Akron","ppg":14.8},{"r":256,"s":"7","rg":"MW","p":"Kam Williams G","t":"Kentucky","ppg":6.9},{"r":257,"s":"5","rg":"West","p":"Andrew Rohde G","t":"Wisconsin","ppg":6.3},{"r":258,"s":"2","rg":"South","p":"Mercy Miller G","t":"Houston","ppg":4.3},{"r":259,"s":"10","rg":"West","p":"Trent Pierce G","t":"Missouri","ppg":10.6},{"r":260,"s":"16","rg":"East","p":"Gavin Doty G","t":"Siena","ppg":17.7},{"r":261,"s":"9","rg":"MW","p":"Trey Green G","t":"Saint Louis","ppg":11.4},{"r":262,"s":"11p/i","rg":"MW","p":"Brant Byers G","t":"Miami (OH)","ppg":14.1},{"r":263,"s":"12","rg":"East","p":"Trey Campbell G","t":"Northern Iowa","ppg":13.4},{"r":264,"s":"6","rg":"West","p":"Keba Keita F","t":"BYU","ppg":6.3},{"r":265,"s":"16p/i","rg":"South","p":"Nasir Whitlock G","t":"Lehigh","ppg":21.1},{"r":266,"s":"13","rg":"South","p":"Victor Valdes F","t":"Troy","ppg":15.0},{"r":267,"s":"10","rg":"MW","p":"Elijah Mahi F","t":"Santa Clara","ppg":14.0},{"r":268,"s":"13","rg":"MW","p":"Preston Edmead G","t":"Hofstra","ppg":15.3},{"r":269,"s":"6","rg":"East","p":"Khani Rooths F","t":"Louisville","ppg":6.1},{"r":270,"s":"1","rg":"South","p":"Micah Handlogten C","t":"Florida","ppg":4.1},{"r":271,"s":"7","rg":"West","p":"Ernest Udeh Jr. C","t":"Miami (Fla)","ppg":6.9},{"r":272,"s":"3","rg":"West","p":"Steele Venters G","t":"Gonzaga","ppg":5.0},{"r":273,"s":"9","rg":"West","p":"Drake Allen G","t":"Utah St.","ppg":6.8},{"r":274,"s":"14","rg":"East","p":"Damari Wheeler-Thomas G","t":"N. Dakota St.","ppg":14.1},{"r":275,"s":"2","rg":"East","p":"Jaylin Stewart F","t":"UCONN","ppg":4.5},{"r":276,"s":"9","rg":"East","p":"Micah Robinson F","t":"TCU","ppg":10.6},{"r":277,"s":"2","rg":"MW","p":"Dominykas Pleta F","t":"Iowa St.","ppg":4.4},{"r":278,"s":"9","rg":"MW","p":"Dion Brown G","t":"Saint Louis","ppg":11.0},{"r":279,"s":"12","rg":"South","p":"Tyshawn Archie G","t":"McNeese St.","ppg":14.1},{"r":280,"s":"13","rg":"South","p":"Thomas Dowd F","t":"Troy","ppg":14.6},{"r":281,"s":"13","rg":"West","p":"Isaac Johnson C","t":"Hawaii","ppg":13.7},{"r":282,"s":"7","rg":"West","p":"Dante Allen G","t":"Miami (Fla)","ppg":6.7},{"r":283,"s":"2","rg":"MW","p":"Dominick Nelson G","t":"Iowa St.","ppg":4.3},{"r":284,"s":"3","rg":"MW","p":"Devin Tillis F","t":"Virginia","ppg":4.9},{"r":285,"s":"13","rg":"West","p":"Dre Bullock G","t":"Hawaii","ppg":13.4},{"r":286,"s":"11p/i","rg":"West","p":"Tramon Mark G","t":"Texas  ","ppg":13.1},{"r":287,"s":"4","rg":"West","p":"Nick Pringle F","t":"Arkansas","ppg":4.7},{"r":288,"s":"8","rg":"MW","p":"Jordan Ross G","t":"Georgia","ppg":6.8},{"r":289,"s":"9","rg":"East","p":"Jayden Pierre G","t":"TCU","ppg":10.2},{"r":290,"s":"11p/i","rg":"West","p":"Jordan Pope G","t":"Texas  ","ppg":13.0},{"r":291,"s":"2","rg":"East","p":"Jayden Ross F","t":"UCONN","ppg":4.3},{"r":292,"s":"6","rg":"MW","p":"DeWayne Brown II F","t":"Tennessee","ppg":5.4},{"r":293,"s":"6","rg":"South","p":"Derek Dixon G","t":"North Carolina","ppg":5.7},{"r":294,"s":"4","rg":"MW","p":"Jalil Bethea G","t":"Alabama","ppg":4.6},{"r":295,"s":"10","rg":"South","p":"Marcus Hill G","t":"Texas A&M","ppg":11.3},{"r":296,"s":"16p/i","rg":"South","p":"Dontae Horne G","t":"Prairie View","ppg":20.4},{"r":297,"s":"16","rg":"West","p":"Jamal Fuller G","t":"LIU","ppg":16.6},{"r":298,"s":"9","rg":"MW","p":"Amari McCottry G","t":"Saint Louis","ppg":10.2},{"r":299,"s":"11","rg":"South","p":"Barry Evans F","t":"VCU","ppg":7.4},{"r":300,"s":"12","rg":"East","p":"Leon Bond III F","t":"Northern Iowa","ppg":11.9},{"r":301,"s":"9","rg":"MW","p":"Quentin Jones G","t":"Saint Louis","ppg":10.0},{"r":302,"s":"11","rg":"South","p":"Michael Belle F","t":"VCU","ppg":7.3},{"r":303,"s":"10","rg":"West","p":"Jacob Crews G","t":"Missouri","ppg":9.2},{"r":304,"s":"11p/i","rg":"West","p":"Tre Holloman G","t":"NC State","ppg":9.6},{"r":305,"s":"9","rg":"MW","p":"Kellen Thames G","t":"Saint Louis","ppg":9.9},{"r":306,"s":"12","rg":"MW","p":"Shammah Scott G","t":"Akron","ppg":12.6},{"r":307,"s":"4","rg":"East","p":"Elmarko Jackson G","t":"Kansas","ppg":4.9},{"r":308,"s":"10","rg":"West","p":"Anthony Robinson II G","t":"Missouri","ppg":9.1},{"r":309,"s":"10","rg":"South","p":"Rylan Griffen G","t":"Texas A&M","ppg":10.7},{"r":310,"s":"10","rg":"South","p":"Rubén Dominguez G","t":"Texas A&M","ppg":10.6},{"r":311,"s":"14","rg":"East","p":"Markhi Strickland G","t":"N. Dakota St.","ppg":12.3},{"r":312,"s":"7","rg":"MW","p":"Andrija Jelavic F","t":"Kentucky","ppg":5.8},{"r":313,"s":"9","rg":"South","p":"Cooper Koch F","t":"Iowa ","ppg":6.7},{"r":314,"s":"11p/i","rg":"MW","p":"Eian Elmer G","t":"Miami (OH)","ppg":12.0},{"r":315,"s":"13","rg":"South","p":"Theo Seng F","t":"Troy","ppg":12.9},{"r":316,"s":"12","rg":"West","p":"Conrad Martinez G","t":"High Point","ppg":10.0},{"r":317,"s":"14","rg":"East","p":"Trevian Carson G","t":"N. Dakota St.","ppg":12.2},{"r":318,"s":"10","rg":"West","p":"T.O. Barrett G","t":"Missouri","ppg":8.9},{"r":319,"s":"13","rg":"South","p":"Cooper Campbell G","t":"Troy","ppg":12.8},{"r":320,"s":"9","rg":"South","p":"Cam Manyawu F","t":"Iowa ","ppg":6.6},{"r":321,"s":"10","rg":"South","p":"Mackenzie Mgbako F","t":"Texas A&M","ppg":10.4},{"r":322,"s":"15","rg":"South","p":"Jackson Rasmussen F","t":"Idaho","ppg":13.9},{"r":323,"s":"14","rg":"MW","p":"Michael Cooper G","t":"Wright St.","ppg":13.2},{"r":324,"s":"12","rg":"East","p":"Will Hornseth F","t":"Northern Iowa","ppg":11.2},{"r":325,"s":"8","rg":"South","p":"Jake Wahlin F","t":"Clemson","ppg":6.0},{"r":326,"s":"15","rg":"South","p":"Kolton Mitchell G","t":"Idaho","ppg":13.7},{"r":327,"s":"7","rg":"MW","p":"Jasper Johnson G","t":"Kentucky","ppg":5.6},{"r":328,"s":"16p/i","rg":"South","p":"Tai'Reon Joseph G","t":"Prairie View","ppg":18.5},{"r":329,"s":"15","rg":"East","p":"Cooper Bowser F","t":"Furman","ppg":13.7},{"r":330,"s":"9","rg":"MW","p":"Ishan Sharma F","t":"Saint Louis","ppg":9.3},{"r":331,"s":"13","rg":"East","p":"Martel Williams G","t":"Cal Baptist","ppg":13.1},{"r":332,"s":"3","rg":"East","p":"Trey Fort G","t":"Michigan St.","ppg":3.9},{"r":333,"s":"11p/i","rg":"MW","p":"B.J. Edwards G","t":"SMU","ppg":12.7},{"r":334,"s":"10","rg":"MW","p":"Allen Graves F","t":"Santa Clara","ppg":11.5},{"r":335,"s":"16p/i","rg":"MW","p":"Cedric Taylor III G","t":"Howard","ppg":17.4},{"r":336,"s":"12","rg":"West","p":"Owen Aquino F","t":"High Point","ppg":9.5},{"r":337,"s":"16p/i","rg":"MW","p":"Bryce Harris G","t":"Howard","ppg":17.3},{"r":338,"s":"2","rg":"East","p":"Malachi Smith G","t":"UCONN","ppg":3.7},{"r":339,"s":"14","rg":"South","p":"Michael Zanoni F","t":"Penn","ppg":11.7},{"r":340,"s":"11p/i","rg":"West","p":"Matt Able G","t":"NC State","ppg":8.7},{"r":341,"s":"10","rg":"East","p":"Chris Johnson G","t":"UCF","ppg":6.5},{"r":342,"s":"16","rg":"West","p":"Malachi Davis G","t":"LIU","ppg":14.5},{"r":343,"s":"10","rg":"South","p":"Pop Isaacs G","t":"Texas A&M","ppg":9.7},{"r":344,"s":"12","rg":"South","p":"Javohn Garcia G","t":"McNeese St.","ppg":11.3},{"r":345,"s":"5","rg":"MW","p":"Luke Bamgboye F","t":"Texas Tech","ppg":4.6},{"r":346,"s":"6","rg":"South","p":"Jonathan Powell G","t":"North Carolina","ppg":4.8},{"r":347,"s":"9","rg":"East","p":"Brock Harding G","t":"TCU","ppg":8.4},{"r":348,"s":"11p/i","rg":"MW","p":"Almar Atlason F","t":"Miami (OH)","ppg":10.8},{"r":349,"s":"9","rg":"West","p":"Elijah Perryman G","t":"Utah St.","ppg":5.3},{"r":350,"s":"9","rg":"South","p":"Tate Sage G","t":"Iowa ","ppg":6.0},{"r":351,"s":"8","rg":"South","p":"Butta Johnson G","t":"Clemson","ppg":5.5},{"r":352,"s":"11","rg":"South","p":"Tyrell Ward G","t":"VCU","ppg":6.3},{"r":353,"s":"7","rg":"West","p":"Marcus Allen G","t":"Miami (Fla)","ppg":5.3},{"r":354,"s":"16","rg":"East","p":"Justice Shoats G","t":"Siena","ppg":13.3},{"r":355,"s":"15","rg":"West","p":"Nasir Mann G","t":"Queens","ppg":13.4},{"r":356,"s":"14","rg":"MW","p":"Michael Imariagbe F","t":"Wright St.","ppg":11.8},{"r":357,"s":"15","rg":"South","p":"Biko Johnson G","t":"Idaho","ppg":12.4},{"r":358,"s":"15","rg":"East","p":"Asa Thomas G","t":"Furman","ppg":12.5},{"r":359,"s":"8","rg":"MW","p":"Jake Wilkins F","t":"Georgia","ppg":5.4},{"r":360,"s":"16","rg":"West","p":"Greg Gordon G","t":"LIU","ppg":13.7},{"r":361,"s":"14","rg":"MW","p":"TJ Burch G","t":"Wright St.","ppg":11.7},{"r":362,"s":"14","rg":"West","p":"RJ Johnson G","t":"Kennesaw St.","ppg":14.5},{"r":363,"s":"11p/i","rg":"MW","p":"Corey Washington F","t":"SMU","ppg":11.6},{"r":364,"s":"11p/i","rg":"MW","p":"Luke Skaljac G","t":"Miami (OH)","ppg":10.4},{"r":365,"s":"4","rg":"South","p":"Cale Jacobsen G","t":"Nebraska","ppg":4.5},{"r":366,"s":"7","rg":"MW","p":"Jayden Quaintance F","t":"Kentucky","ppg":5.0},{"r":367,"s":"13","rg":"West","p":"Harry Rouhliadeff F","t":"Hawaii","ppg":10.5},{"r":368,"s":"16p/i","rg":"MW","p":"Jah'Likai King G","t":"UMBC","ppg":13.8},{"r":369,"s":"10","rg":"West","p":"Shawn Phillips Jr. C","t":"Missouri","ppg":7.7},{"r":370,"s":"14","rg":"East","p":"Treyson Anderson F","t":"N. Dakota St.","ppg":10.5},{"r":371,"s":"15","rg":"South","p":"Isaiah Brickner G","t":"Idaho","ppg":12.1},{"r":372,"s":"12","rg":"East","p":"Ben Schwieger F","t":"Northern Iowa","ppg":9.7},{"r":373,"s":"9","rg":"East","p":"Liutauras Lelevicius G","t":"TCU","ppg":7.9},{"r":374,"s":"6","rg":"South","p":"Kyan Evans G","t":"North Carolina","ppg":4.5},{"r":375,"s":"15","rg":"MW","p":"Dante Harris G","t":"Tennessee St.","ppg":11.7},{"r":376,"s":"9","rg":"East","p":"Tanner Toolson G","t":"TCU","ppg":7.8},{"r":377,"s":"11p/i","rg":"MW","p":"Antwone Woolfolk F","t":"Miami (OH)","ppg":10.0},{"r":378,"s":"15","rg":"West","p":"Yoav Berman G","t":"Queens","ppg":12.6},{"r":379,"s":"2","rg":"South","p":"Chase McCarty F","t":"Houston","ppg":3.0},{"r":380,"s":"16p/i","rg":"South","p":"Hank Alvey F","t":"Lehigh","ppg":15.0},{"r":381,"s":"9","rg":"South","p":"Kael Combs G","t":"Iowa ","ppg":5.5},{"r":382,"s":"9","rg":"South","p":"Isaia Howard G","t":"Iowa ","ppg":5.5},{"r":383,"s":"12","rg":"MW","p":"Evan Mahaffey G","t":"Akron","ppg":10.1},{"r":384,"s":"10","rg":"East","p":"Devan Cambridge F","t":"UCF","ppg":5.7},{"r":385,"s":"5","rg":"West","p":"Aleksas Bieliauskas F","t":"Wisconsin","ppg":4.3},{"r":386,"s":"11p/i","rg":"MW","p":"Samet Yigitoglu C","t":"SMU","ppg":10.8},{"r":387,"s":"4","rg":"East","p":"Jamari McDowell G","t":"Kansas","ppg":3.9},{"r":388,"s":"7","rg":"South","p":"Harry Wessels C","t":"St. Mary's","ppg":5.1},{"r":389,"s":"13","rg":"West","p":"Gytis Nemeiksa F","t":"Hawaii","ppg":9.8},{"r":390,"s":"16p/i","rg":"MW","p":"DJ Armstrong Jr. G","t":"UMBC","ppg":12.9},{"r":391,"s":"7","rg":"West","p":"Timotej Malovec F","t":"Miami (Fla)","ppg":4.8},{"r":392,"s":"10","rg":"East","p":"John Bol C","t":"UCF","ppg":5.6},{"r":393,"s":"12","rg":"East","p":"Tristan Smith F","t":"Northern Iowa","ppg":9.1},{"r":394,"s":"10","rg":"West","p":"Sebastian Mack G","t":"Missouri","ppg":7.0},{"r":395,"s":"14","rg":"East","p":"Andy Stefonowicz G","t":"N. Dakota St.","ppg":9.4},{"r":396,"s":"14","rg":"MW","p":"Solomon Callaghan G","t":"Wright St.","ppg":10.3},{"r":397,"s":"15","rg":"West","p":"Jordan Watford G","t":"Queens","ppg":11.6},{"r":398,"s":"14","rg":"East","p":"Noah Feddersen F","t":"N. Dakota St.","ppg":9.3},{"r":399,"s":"15","rg":"West","p":"Avantae Parker F","t":"Queens","ppg":11.4},{"r":400,"s":"7","rg":"East","p":"Jamar Brown G","t":"UCLA","ppg":4.5}];
+
+let drafted=new Set(),myPicks=[],sortCol='r',sortAsc=true,activeTab='all';
+const SK='mm-draft-2026-v2';
+
+function load(){try{const s=localStorage.getItem(SK);if(s){const o=JSON.parse(s);drafted=new Set(o.d||[]);myPicks=o.m||[];}}catch(e){}}
+function save(){try{localStorage.setItem(SK,JSON.stringify({d:[...drafted],m:myPicks}));}catch(e){}}
+
+load();
+
+const seeds=[...new Set(DATA.map(d=>d.s))].sort((a,b)=>{const na=parseFloat(a),nb=parseFloat(b);if(!isNaN(na)&&!isNaN(nb))return na-nb;return a.localeCompare(b);});
+const ss=document.getElementById('seedFilter');
+seeds.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});
+
+document.getElementById('search').addEventListener('input',()=>render());
+document.getElementById('regionFilter').addEventListener('change',()=>render());
+ss.addEventListener('change',()=>render());
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');activeTab=t.dataset.tab;render();
+  });
+});
+document.querySelectorAll('.sort-opt').forEach(s=>{
+  s.addEventListener('click',()=>{
+    const c=s.dataset.sort;
+    if(sortCol===c)sortAsc=!sortAsc;else{sortCol=c;sortAsc=c==='ppg'?false:true;}
+    document.querySelectorAll('.sort-opt').forEach(x=>x.classList.remove('active'));
+    s.classList.add('active');render();
+  });
+});
+
+function toggleDraft(r){
+  if(myPicks.includes(r)){myPicks=myPicks.filter(x=>x!==r);drafted.delete(r);}
+  else if(drafted.has(r)){drafted.delete(r);}
+  else{drafted.add(r);}
+  save();render();
+}
+function pickForMe(r,e){
+  e.stopPropagation();
+  if(myPicks.includes(r)){myPicks=myPicks.filter(x=>x!==r);drafted.delete(r);}
+  else{if(!drafted.has(r))drafted.add(r);if(!myPicks.includes(r))myPicks.push(r);}
+  save();render();
+}
+function removePick(r){myPicks=myPicks.filter(x=>x!==r);drafted.delete(r);save();render();}
+
+document.querySelector('.reset-link').addEventListener('click',()=>{
+  if(!confirm('Reset all picks?'))return;drafted=new Set();myPicks=[];save();render();
+});
+
+function render(){
+  const sv=document.getElementById('search').value.toLowerCase();
+  const rv=document.getElementById('regionFilter').value;
+  const sdv=document.getElementById('seedFilter').value;
+
+  const rc={East:0,West:0,MW:0,South:0};
+  myPicks.forEach(rank=>{const pl=DATA.find(d=>d.r===rank);if(pl)rc[pl.rg]++;});
+  document.getElementById('regionRow').innerHTML=
+    ['East','West','MW','South'].map(rg=>
+      '<div class="rc rc-'+rg+'"><span class="rlabel">'+(rg==='MW'?'MW':rg)+'</span><span class="rnum">'+rc[rg]+'</span></div>'
+    ).join('');
+
+  const bar=document.getElementById('picksRow');
+  bar.innerHTML='<span class="lbl">My picks:</span>';
+  if(myPicks.length===0)bar.innerHTML+='<span style="font-size:11px;color:var(--text3)">None yet</span>';
+  myPicks.forEach((rank,i)=>{
+    const pl=DATA.find(d=>d.r===rank);if(!pl)return;
+    const isInj=INJURED.has(rank);
+    const c=document.createElement('span');
+    c.className='chip'+(isInj?' cinj':'');
+    c.innerHTML=(i+1)+'. '+pl.p.split(' ').slice(0,-1).join(' ')+(isInj?' <span class="inj-tag">INJ</span>':'')+' <span class="cx">\u2715</span>';
+    c.onclick=()=>removePick(rank);
+    bar.appendChild(c);
+  });
+
+  let data=[...DATA];
+  if(sv)data=data.filter(d=>d.p.toLowerCase().includes(sv)||d.t.toLowerCase().includes(sv));
+  if(rv)data=data.filter(d=>d.rg===rv);
+  if(sdv)data=data.filter(d=>d.s===sdv);
+
+  const allCount=data.length;
+  const availCount=data.filter(d=>!drafted.has(d.r)).length;
+  const mineCount=data.filter(d=>myPicks.includes(d.r)).length;
+  const injCount=data.filter(d=>INJURED.has(d.r)).length;
+
+  if(activeTab==='available')data=data.filter(d=>!drafted.has(d.r));
+  else if(activeTab==='mine')data=data.filter(d=>myPicks.includes(d.r));
+  else if(activeTab==='injured')data=data.filter(d=>INJURED.has(d.r));
+
+  data.sort((a,b)=>{
+    let va=a[sortCol],vb=b[sortCol];
+    if(sortCol==='ppg'||sortCol==='r'){va=Number(va);vb=Number(vb);}
+    else{va=String(va).toLowerCase();vb=String(vb).toLowerCase();}
+    if(va<vb)return sortAsc?-1:1;if(va>vb)return sortAsc?1:-1;return 0;
+  });
+
+  document.querySelectorAll('.sort-opt').forEach(s=>{
+    const arr=s.querySelector('.sarr');
+    arr.textContent=s.dataset.sort===sortCol?(sortAsc?' \u25B2':' \u25BC'):'';
+  });
+
+  document.getElementById('tc-all').textContent='('+allCount+')';
+  document.getElementById('tc-available').textContent='('+availCount+')';
+  document.getElementById('tc-mine').textContent='('+mineCount+')';
+  document.getElementById('tc-injured').textContent='('+injCount+')';
+
+  document.getElementById('stats').innerHTML='Available: <b>'+availCount+'</b> / '+allCount+' \u00b7 Drafted: <b>'+(allCount-availCount)+'</b>';
+
+  const list=document.getElementById('list');
+  if(data.length===0){list.innerHTML='<div class="empty-state">No players match</div>';return;}
+  list.innerHTML=data.map(d=>{
+    const isDrafted=drafted.has(d.r),isMine=myPicks.includes(d.r),isInj=INJURED.has(d.r);
+    const cls='player-card'+(isMine?' mine':isDrafted?' drafted':'');
+    return '<div class="'+cls+'" onclick="toggleDraft('+d.r+')">'+
+      '<div class="pc-rank">'+d.r+'</div>'+
+      '<div class="pc-info">'+
+        '<div class="pc-name'+(isInj?' injured':'')+'">'+d.p+(isInj?'<span class="inj-tag">INJ</span>':'')+'</div>'+
+        '<div class="pc-meta"><span class="pc-team">'+d.t+'</span><span class="rg rg-'+d.rg+'">'+d.rg+'</span><span class="seed-tag">'+d.s+'</span></div>'+
+      '</div>'+
+      '<div class="pc-right">'+
+        '<div class="pc-ppg">'+d.ppg+'</div>'+
+        '<button class="pc-btn'+(isMine?' is-mine':'')+'" onclick="pickForMe('+d.r+',event)">'+(isMine?'Undo':'Mine')+'</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+render();
+</script>
+</body>
+</html>
